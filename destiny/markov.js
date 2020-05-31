@@ -1,6 +1,11 @@
 fetch('https://raw.githubusercontent.com/jamiegavis/destiny-lore/master/model.json')
   .then(response => response.json())
-  .then(data => console.log(data));
+  .then(data => var model = data);
+
+var c_dist = 0 
+
+//random int 0 to c_dist
+Math.floor(Math.random()*(c_dist+1)) //+1 since floor 
 
 
 /*
