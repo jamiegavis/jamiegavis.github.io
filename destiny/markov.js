@@ -1,6 +1,6 @@
-fetch('https://raw.githubusercontent.com/jamiegavis/destiny-lore/master/model.json')
+var model = fetch('https://raw.githubusercontent.com/jamiegavis/destiny-lore/master/model.json')
   .then(response => response.json())
-  .then(data => var model = data);
+
 
 var c_dist = 0 
 
