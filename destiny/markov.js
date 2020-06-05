@@ -5,6 +5,8 @@ fetch('https://raw.githubusercontent.com/jamiegavis/destiny-lore/master/model.js
 
 ranGen = (maximum) => Math.ceil(Math.random()*maximum);
 
+console.log(model)
+
 var markov = new Object();
 for (i = 0; i < model.length; i++) { 
     markov[model[i][0]] = markov[model[i][1]] 
