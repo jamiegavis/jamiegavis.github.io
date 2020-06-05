@@ -1,12 +1,14 @@
-var model
+var model,c_dist,ranGen,i
+
 fetch('https://raw.githubusercontent.com/jamiegavis/destiny-lore/master/model.json')
-  .then(response => response.json()).then(data => model = data)
+  .then(response => response.json()).then(data => model = JSON.parse(data));
 
-var c_dist = 0 
+ranGen = (maximum) => Math.ceil(Math.random()*maximum);
 
-//random int 0 to c_dist
-Math.floor(Math.random()*(c_dist+1)) //+1 since floor 
-
+var markov = new Object();
+for (i = 0; i < model["chain"].length; i++) { 
+    markov[model["chain"][i][0]] = markov[model["chain"][i][1]] 
+} 
 
 /*
 Build a Python representation of the Markov model. Returns a dict
