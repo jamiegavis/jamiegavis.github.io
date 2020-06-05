@@ -1,15 +1,17 @@
 var model,c_dist,ranGen,i
+var markov = new Object();
 
 fetch('https://raw.githubusercontent.com/jamiegavis/destiny-lore/master/model.json')
-  .then(response => response.json()).then(data => model = JSON.parse(data["chain"]));
+	.then(response => response.json())
+	.then(data => JSON.parse(data["chain"]))
+	.then(model => buildMarkov(model));
 
 ranGen = (maximum) => Math.ceil(Math.random()*maximum);
 
-console.log(model)
-
-var markov = new Object();
-for (i = 0; i < model.length; i++) { 
-    markov[model[i][0]] = markov[model[i][1]] 
+buildMarkov = (m) => { 
+	for (i = 0; i < m.length; i++) { 
+	    markov[m[i][0]] = markov[m[i][1]] 
+	}
 } 
 
 /*
