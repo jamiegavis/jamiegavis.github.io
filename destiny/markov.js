@@ -4,12 +4,12 @@ var exported = 'https://raw.githubusercontent.com/jamiegavis/destiny-lore/master
 fetch(exported)
 	.then(response => response.json())
 	.then(data => JSON.parse(data["chain"]))
-	.then(model => buildMarkov(model));
-	//.then(_ => sentence.push(step("___BEGIN__,___BEGIN__"))) works but promises issue
+	.then(model => buildMarkov(model))
+	.then(success => textGen()); //works but promises issue
 
 var ranInt = (maximum) => Math.floor(Math.random()*maximum);
 
-var buildMarkov = (m) => { 
+function buildMarkov(m) { 
 	var rolling
 	for (let i = 0; i < m.length; i++) {
 		rolling = 0 
@@ -21,21 +21,30 @@ var buildMarkov = (m) => {
 	}
 }; 
 
-var step = (state) => {
+function step(state) {
 	var rand = ranInt(markov[state][markov[state].length-1][0])
 	for (let i = 0; i < markov[state].length; i++) {
 		if (rand < markov[state][i][0]) return markov[state][i][1]
 	}	 
 };
 
-var walk = (start) => {
-	var sentence = ["___BEGIN__"]
-	sentence.push(step(start))
-	while (sentence[sentence.length-1] !== "___END__") {
-		console.log(sentence)
-		var state = sentence.slice(sentence.length-2).join(",")
-		sentence.push(step(state))		
+function walk(start,minWords=1,tries=10) {
+	let attempts = 0
+	var sentence = []
+	while (sentence.length < minWords && attempts < tries) {
+		sentence = ["___BEGIN__"]
+		sentence.push(step(start))
+		while (sentence[sentence.length-1] !== "___END__") {
+			console.log(sentence)
+			var state = sentence.slice(sentence.length-2).join(",")
+			sentence.push(step(state))	
+		}	
 	}	
 	return sentence
-} 
+};
 
+function textGen() {
+	let text = walk("___BEGIN__,___BEGIN__",10)
+	var textStr = text.slice(1,text.length-1).join(" ")
+	return textStr
+};
