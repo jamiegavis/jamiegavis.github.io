@@ -44,7 +44,7 @@ function walk(start,minWords=1,tries=10) {
 };
 
 function textGen() {
-	let text = walk("___BEGIN__,___BEGIN__",20)
+	let text = walk("___BEGIN__,___BEGIN__",50)
 	var textStr = text.slice(1,text.length-1).join(" ")
 	return textStr
 };
