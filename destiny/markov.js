@@ -35,7 +35,7 @@ function walk(start,minWords=1,tries=10) {
 		sentence = ["___BEGIN__"]
 		sentence.push(step(start))
 		while (sentence[sentence.length-1] !== "___END__") {
-			console.log(sentence)
+			//console.log(sentence) //debugging
 			var state = sentence.slice(sentence.length-2).join(",")
 			sentence.push(step(state))	
 		}	
@@ -44,7 +44,7 @@ function walk(start,minWords=1,tries=10) {
 };
 
 function textGen() {
-	let text = walk("___BEGIN__,___BEGIN__",10)
+	let text = walk("___BEGIN__,___BEGIN__",20)
 	var textStr = text.slice(1,text.length-1).join(" ")
 	return textStr
 };
