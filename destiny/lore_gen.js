@@ -1,5 +1,5 @@
 function genLore() {
-  document.getElementById("lore").innerHTML = textGen();
+  document.getElementById("lore").innerHTML = textGen(10);
 }
 
 
