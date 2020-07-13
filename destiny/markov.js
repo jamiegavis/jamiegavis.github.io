@@ -43,8 +43,8 @@ function walk(start,minWords=1,tries=10) {
 	return sentence
 };
 
-function textGen() {
-	let text = walk("___BEGIN__,___BEGIN__",50)
+function textGen(words=50) {
+	let text = walk("___BEGIN__,___BEGIN__",words)
 	var textStr = text.slice(1,text.length-1).join(" ")
 	return textStr
 };
