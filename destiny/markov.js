@@ -16,7 +16,7 @@ function buildMarkov(m) {
 		markov[m[i][0]] = []
 		for (let [key,value] of Object.entries(m[i][1])) {
 			rolling += value
-			markov[m[i][0]].push([rolling, key])	//memory concerns?		
+			markov[m[i][0]].push([rolling, key])	//memory
 		}
 	}
 }; 
