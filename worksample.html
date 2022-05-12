@@ -1,0 +1,208 @@
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css" integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ==" crossorigin="" />
+<script
+  src="https://code.jquery.com/jquery-3.6.0.min.js"
+  integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+  crossorigin="anonymous"></script>
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js" integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ==" crossorigin=""></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+<script src="data.js"></script>
+<head>
+<style>
+#map { height: 300px; width: 600px }
+
+</style>
+</head>
+
+<body>
+<h1>Jamie Gavis Interactive Work Sample</h1>
+<p style="font-size:xx-small">Copyright 2022 E.J. Gavis or the Respective Rights Holders</p>
+<h2>2020-2021 School Year Data from Chicago Public Schools</h2>
+<div id="selectDiv">
+<select class="selectorDrop" name="schools" id="schoolSelect" multiple>
+</select>
+<br>
+<select class="selectorDrop" name="metric" id="metricSelect" multiple>
+    <option value="graduation_rate_school">Graduation Rate</option>
+    <option value="student_count_low_income">Low Income</option>
+    <option value="student_count_special_ed">Special Ed</option>
+    <option value="student_count_english_learners">English Learners</option>
+    <option value="student_count_black">Black Students</option>
+    <option value="student_count_hispanic">Hispanic Students</option>
+    <option value="student_count_white">White Students</option>
+    <option value="student_count_asian">Asian Students</option>
+    <option value="student_count_native_american">Native American Students</option>
+    <option value="student_count_other_ethnicity">Other Ethnicity Students</option>
+    <option value="student_count_asian_pacific_islander">Asian Pacific Islander Students</option>
+    <option value="student_count_multi">Multiple Ethnicity Students</option>
+    <option value="student_count_ethnicity_not_available">Student Ethnicity Not Available</option>
+    <option value="overall_attendance">Attendance Rate</option>
+</select>
+<select class="selectorDrop" name="average" id="averageSelect">
+    <option value="cps_average">All CPS Schools Average</option>
+    <option value="encord_average">Embarc Schools Average</option>
+</select>
+<br>
+<button type="button" id="btnMap"> Load Selected </button>
+</div>
+<br>
+<div id="map"></div>
+<div class="container" style="position: relative; height:40vh; width:50vw">
+    <canvas id="metricChart" width="600" height="600"></canvas>
+    <div id="testDiv"></div>
+</div>
+</body>
+
+<script>
+
+var map = L.map('map').setView([41.881832, -87.623177], 9);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+}).addTo(map);
+
+for (let k of Object.keys(sData.school_id)) {
+    optText = sData.long_name[k];
+    optValue = k;
+    $('#schoolSelect').append(`<option value="${optValue}">${optText}</option>`);
+}
+
+var MAPPED = []
+//add options for all and average
+//working otherwise!
+function mapSchools() {
+    console.log(MAPPED)
+    for (let i=0; i < MAPPED.length; i++) {
+        MAPPED[i].remove() //check
+    }
+    MAPPED = []
+    var chosen = $('#schoolSelect').select2('data');
+    for (let i=0; i < chosen.length; i++) {
+        let sID = parseInt(chosen[i].id)
+        let lat = sData.school_latitude[sID]
+        let lon = sData.school_longitude[sID]
+        MAPPED.push(L.marker([lat, lon]).addTo(map).bindPopup(sData.long_name[sID] + "<br>" + sData.student_count_total[sID].toString() + " Students"))
+    }
+
+    graphMetric()
+};
+
+//////////////////////////////////////////////
+
+const ctx = document.getElementById('metricChart').getContext('2d');
+const metricChart = new Chart(ctx, {
+    data: {
+        datasets: []
+    },
+    options: {
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    format: {
+                        style: 'percent',
+                    },                
+                    callback: function(value, index, ticks) {
+                        return Math.round(value * 10000) / 100 + '%'; 
+                        //rounding to fix a niche display issue 
+                    }
+                },
+                },
+            }
+        },
+        //onClick: graphClickEvent
+});
+
+
+function buildColorRGB(i) {
+    //magic numbers & intersects 
+    let rv = "rgba(";
+    if (i % 2 === 0) {
+        let rC = 50 + (20 * i);
+        let gC = 150 - (15 * i);
+        let bC = 250 - (25 * i);
+        rv += String(rC) + ", " + String(gC) + ", " + String(bC);
+    } else {
+        let rC = 150 - (15 * i);
+        let gC = 250 - (25 * i);
+        let bC = 50 + (20 * i);
+        rv += String(rC) + ", " + String(gC) + ", " + String(bC);
+    } 
+    return rv
+};
+
+function graphMetric() {
+    var which = [];
+    var chosen = $('#schoolSelect').select2('data');
+    for (let i=0; i < chosen.length; i++) {
+        let sID = parseInt(chosen[i].id)
+        which.push(sData.short_name[sID])
+    }
+    const data = metricChart.data;
+    //clearing    
+    metricChart.data.datasets = []
+    metricChart.data.labels = which
+    metricChart.update()
+    
+    var metrics = $('#metricSelect').select2('data')
+    var chosen = $('#schoolSelect').select2('data');
+    var goal = $('#averageSelect').select2('data')
+
+
+    for (let i=0; i < metrics.length; i++) {
+        var m = metrics[i].id
+        console.log(m)
+        const newDataset = {
+            type: "bar",
+            label: metrics[i].text,
+            backgroundColor: buildColorRGB(i) + ", 0.5)", 
+            data: []};
+        for (let j=0; j < chosen.length; j++) {
+            let sID = parseInt(chosen[j].id)
+            newDataset.data.push(sData[m][sID])
+            };
+        metricChart.data.datasets.push(newDataset);
+        metricChart.update();
+
+        let gID = goal[0].id
+        let gName = goal[0].text
+
+        const newGoalline = {
+            type: "line",
+            borderDash:[5,5],
+            //pointRadius: 0,
+            label: metrics[i].text + " " + gName,
+            borderColor: buildColorRGB(i) +  ", " + " 0.75)",
+            data: [],
+        }
+        for (let j=0; j < chosen.length; j++) {
+            let sID = parseInt(chosen[j].id)
+            newGoalline.data.push(sData[m + "_" + gID][sID])
+            };
+
+        metricChart.data.datasets.push(newGoalline);
+        metricChart.update();
+
+    }
+}
+    
+
+//////////////////////////////////////////////
+
+$(document).ready(function() {
+    $('#schoolSelect').select2({
+        maximumSelectionLength: 12
+    });
+
+    $('#metricSelect').select2({
+        maximumSelectionLength: 4
+    });
+
+    $('#averageSelect').select2({});
+
+    $('#btnMap').on('click', mapSchools)
+
+});
+
+</script>
