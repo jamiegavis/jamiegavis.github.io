@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css" integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ==" crossorigin="" />
+    <script
+      src="https://code.jquery.com/jquery-3.6.0.min.js"
+      integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+      crossorigin="anonymous"></script>
+      <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+      <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js" integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ==" crossorigin=""></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+    <script src="data.js"></script>
+<style>
+.box {
+    display: inline-block;
+    width: 50px;
+    height:25px;
+    padding: 5px;
+    border: 2px white;
+    background: cornflowerblue;
+    color: white;
+    text-align: center;
+    
+}
+.metric {
+    display: inline-block;
+    width: 300px;
+    height: 25px;
+    margin-left: 10px;
+    margin-top: 2px;
+    padding: 5px;
+    border: 2px white;
+    background: cornflowerblue;
+    color: white;
+}
+.boxSAS {
+    display: inline-block;
+    width: 50px;
+    height:25px;
+    padding: 5px;
+    border: 2px white;
+    background: lightgreen;
+    color: white;
+    text-align: center;
+}
+.boxCES {
+    display: inline-block;
+    width: 50px;
+    height:25px;
+    padding: 5px;
+    border: 2px white;
+    background: lightcoral;
+    color: white;
+    text-align: center;
+    
+}
+.boxECO {
+    display: inline-block;
+    width: 50px;
+    height:25px;
+    padding: 5px;
+    border: 2px white;
+    background: khaki;
+    color: white;
+    text-align: center;
+    
+}
+</style>
+</head>
+<body>
+<h1>Learning Hub Dashboard Proof of Concept</h1>
+<p>No actual TNM data used</p>
+<p>Updated 06/13/22</p>
+<h3>Dashboard</h3>
+<select class="selectorDrop" name="Program" id="averageSelect">
+    <option default value="crib">The Crib</option>
+    <option value="yot">Youth Outreach Team</option>
+    <option value="pathways">Pathways</option>
+</select>
+<select class="selectorDrop" name="metric" id="metricSelect">
+    <option default value="Housing">Housing</option>
+    <option value="Housing">Health</option>
+    <option value="Housing">Employment and Education</option>
+</select>
+<select class="selectorDrop" name="metric" id="fySelect">
+    <option default value="FY22">FY22</option>
+    <option value="FY21">FY21</option>
+    <option value="FY20">FY20</option>
+</select>
+<div>
+    <div class="metric">Metric</div>
+    <div class="box" title="Q1 FY22">Q1</div>
+    <div class="box" title="Q2 FY22">Q2</div>
+    <div class="box" title="Q3 FY22">Q3</div>
+    <div class="box" title="Q4 FY22">Q4</div>
+    <div class="box" title="YTD">YTD</div>
+    <div class="box" title="Goal">Goal</div>
+</div>
+<div>
+    <div class="metric" id="SAS">Youth Attained Safe/Stable Housing</div>
+    <div class="box" title="7/10" id="SASQ1">70%</div>
+    <div class="box" title="12/14" id="SASQ2">86%</div>
+    <div class="box" title="5/8" id="SASQ3">63%</div>
+    <div class="box" title="8/9" id="SASQ4">89%</div> 
+    <div class="box" title="32/41" id="SASYTD">78%</div> 
+    <div class="boxSAS" id="SASGOAL">80%</div> 
+
+</div>
+<div>
+    <div class="metric" id="CES">Youth Completed CES Assessment</div>
+    <div class="box" title="3/6" id="CESQ1">50%</div>
+    <div class="box" title="4/7" id="CESQ2">57%</div>
+    <div class="box" title="5/8" id="CESQ3">63%</div>
+    <div class="box" title="4/8" id="CESQ4">50%</div> 
+    <div class="box" title="16/29" id="CESYTD">55%</div> 
+    <div class="boxCES" id="CESGOAL">70%</div> 
+</div>
+<div>
+    <div class="metric" id="ECO">Youth Added A Support to EcoMap</div>
+    <div class="box" title="1/6" id="ECOQ1">17%</div>
+    <div class="box" title="4/15" id="ECOQ2">27%</div>
+    <div class="box" title="1/8" id="ECOQ3">13%</div>
+    <div class="box" title="3/9" id="ECOQ4">33%</div>  
+    <div class="box" title="9/38" id="ECOYTD">22%</div> 
+    <div class="boxECO" id="SASGOAL">25%</div> 
+</div>
+<h3>Graph  <button id="clearGraph">Reset</button></h3>
+<div class="container" style="position: relative; height:800px; width:500px">
+    <canvas id="metricChart" style="position: relative; height:500px; width:500px"></canvas>
+    <div id="testDiv"></div>
+</div>
+
+</body>
+<script>
+const ctx = document.getElementById('metricChart').getContext('2d');
+const metricChart = new Chart(ctx, {
+    data: {
+        datasets: [],
+        labels: ["Q1 FY22","Q2 FY22", "Q3 FY22", "Q4 FY22"]
+    },
+    options: {
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    format: {
+                        style: 'percent',
+                    },                
+                    callback: function(value, index, ticks) {
+                        return Math.round(value * 10000) / 100 + '%'; 
+                        //rounding to fix a niche display issue 
+                    }
+                },
+                },
+            }
+        },
+        //onClick: graphClickEvent
+});
+
+
+function buildColorRGB(i) {
+    //magic numbers & intersects 
+    let rv = "rgba(";
+    if (i % 2 === 0) {
+        let rC = 50 + (20 * i);
+        let gC = 150 - (15 * i);
+        let bC = 250 - (25 * i);
+        rv += String(rC) + ", " + String(gC) + ", " + String(bC);
+    } else {
+        let rC = 150 - (15 * i);
+        let gC = 250 - (25 * i);
+        let bC = 50 + (20 * i);
+        rv += String(rC) + ", " + String(gC) + ", " + String(bC);
+    } 
+    return rv
+};
+
+var count = 0
+
+function graphMetric(e) {
+    var id = e.target.id;
+    var jqID = "#" + id;
+    
+    const newDataset = {
+        type: "bar",
+        label: $(jqID).text(),
+        backgroundColor: buildColorRGB(count) + ", 0.5)", 
+        data: []};
+        for (let i=1; i < 5; i++) {
+            let txt =  $(jqID + "Q" + String(i)).text()
+            let decimal = parseFloat(txt) / 100
+            newDataset.data.push(decimal)
+            };
+
+    metricChart.data.datasets.push(newDataset);
+    metricChart.update();
+    count = count+1;
+
+}
+
+function clearGraphics(e) {
+    metricChart.data.datasets = []
+    metricChart.update()
+}
+
+
+$(document).ready(function() {
+
+    $('#metricSelect').select2({
+        maximumSelectionLength: 4
+    });
+
+
+    $('#averageSelect').select2({});
+
+    $('.metric').click(graphMetric)
+
+    $('#clearGraph').click(clearGraphics)
+
+});
+
+</script>
+
