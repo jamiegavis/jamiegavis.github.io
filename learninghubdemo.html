@@ -103,8 +103,8 @@
     <div class="box" title="12/14" id="SASQ2">86%</div>
     <div class="box" title="5/8" id="SASQ3">63%</div>
     <div class="box" title="8/9" id="SASQ4">89%</div> 
-    <div class="box" title="32/41" id="SASYTD">78%</div> 
-    <div class="boxSAS" id="SASGOAL">80%</div> 
+    <div class="boxSAS" title="32/41" id="SASYTD">78%</div> 
+    <div class="box" id="SASGOAL" title="YTD 98% of Goal">80%</div> 
 
 </div>
 <div>
@@ -113,8 +113,8 @@
     <div class="box" title="4/7" id="CESQ2">57%</div>
     <div class="box" title="5/8" id="CESQ3">63%</div>
     <div class="box" title="4/8" id="CESQ4">50%</div> 
-    <div class="box" title="16/29" id="CESYTD">55%</div> 
-    <div class="boxCES" id="CESGOAL">70%</div> 
+    <div class="boxCES" title="16/29" id="CESYTD">55%</div> 
+    <div class="box" id="CESGOAL" title="YTD 79% of Goal">70%</div> 
 </div>
 <div>
     <div class="metric" id="ECO">Youth Added A Support to EcoMap</div>
@@ -122,8 +122,8 @@
     <div class="box" title="4/15" id="ECOQ2">27%</div>
     <div class="box" title="1/8" id="ECOQ3">13%</div>
     <div class="box" title="3/9" id="ECOQ4">33%</div>  
-    <div class="box" title="9/38" id="ECOYTD">22%</div> 
-    <div class="boxECO" id="SASGOAL">25%</div> 
+    <div class="boxECO" title="9/38" id="ECOYTD">22%</div> 
+    <div class="box" id="ECOGOAL" title="YTD 87% of Goal">25%</div> 
 </div>
 <h3>Graph  <button id="clearGraph">Reset</button></h3>
 <div class="container" style="position: relative; height:800px; width:500px">
@@ -195,6 +195,25 @@ function graphMetric(e) {
 
     metricChart.data.datasets.push(newDataset);
     metricChart.update();
+
+    const newGoalline = {
+            type: "line",
+            borderDash:[5,5],
+            //pointRadius: 0,
+            label: "Goal: " + $(jqID).text(),
+            borderColor: buildColorRGB(count) +  ", " + " 0.75)",
+            data: [],
+    }
+    var goalTxt = $(jqID + "GOAL").text()
+    for (let j=0; j < 4; j++) {
+            let goalDecimal =  parseFloat(goalTxt) / 100
+            console.log(goalDecimal)
+            newGoalline.data.push(goalDecimal)
+            };
+
+    metricChart.data.datasets.push(newGoalline);
+    metricChart.update();
+
     count = count+1;
 
 }
@@ -202,6 +221,7 @@ function graphMetric(e) {
 function clearGraphics(e) {
     metricChart.data.datasets = []
     metricChart.update()
+    count = 0
 }
 
 
