@@ -158,7 +158,6 @@ const metricChart = new Chart(ctx, {
         //onClick: graphClickEvent
 });
 
-
 function buildColorRGB(i) {
     //magic numbers & intersects 
     let rv = "rgba(";
@@ -224,6 +223,14 @@ function clearGraphics(e) {
     count = 0
 }
 
+function showDetail(e) {
+    var id = e.target.id;
+    var jqID = "#" + id;
+    var detailTitle = $(jqID).prop('title');
+    alert("Clients: \nSenia McBrunswick \nLilly Light \nJohn Smithers \nBenjamin Franklin \nTheodore Thomas")
+
+
+}
 
 $(document).ready(function() {
 
@@ -234,9 +241,11 @@ $(document).ready(function() {
 
     $('#averageSelect').select2({});
 
-    $('.metric').click(graphMetric)
+    $('.metric').click(graphMetric);
 
-    $('#clearGraph').click(clearGraphics)
+    $('.box').click(showDetail);
+
+    $('#clearGraph').click(clearGraphics);
 
 });
 
