@@ -108,9 +108,9 @@
 <body>
 <h1>Learning Hub Dashboard Proof of Concept</h1>
 <p>No actual TNM data used</p>
-<p>Updated 06/13/22</p>
+<p>Updated 06/16/22</p>
 <h3>Dashboard</h3>
-<select class="selectorDrop" name="Program" id="averageSelect">
+<select class="selectorDrop" name="Program" id="programSelect">
     <option default value="crib">The Crib</option>
     <option value="yot">Youth Outreach Team</option>
     <option value="pathways">Pathways</option>
@@ -121,9 +121,9 @@
     <option value="Housing">Employment and Education</option>
 </select>
 <select class="selectorDrop" name="metric" id="fySelect" style="width: 75px;">
-    <option default value="FY22">FY22</option>
-    <option value="FY21">FY21</option>
-    <option value="FY20">FY20</option>
+    <option default value="22">FY22</option>
+    <option value="21">FY21</option>
+    <option value="20">FY20</option>
 </select>
 <div>
     <div class="metriclabel">Metric</div>
@@ -174,7 +174,7 @@ const ctx = document.getElementById('metricChart').getContext('2d');
 const metricChart = new Chart(ctx, {
     data: {
         datasets: [],
-        labels: ["Q1","Q2", "Q3", "Q4"]
+        labels: ["Q1","Q2", "Q3", "Q4"],
     },
     options: {
         scales: {
@@ -190,8 +190,14 @@ const metricChart = new Chart(ctx, {
                     }
                 },
                 },
+            },
+        plugins: {
+            legend: {
+                position:"bottom"
             }
-        },
+        }
+    },
+       
         //onClick: graphClickEvent
 });
 
@@ -212,15 +218,27 @@ function buildColorRGB(i) {
     return rv
 };
 
+
 var count = 0
 
 function graphMetric(e) {
     var id = e.target.id;
     var jqID = "#" + id;
+
+    var program = $("#programSelect").select2("data")[0].text
+    var fy = $("#fySelect").select2("data")[0].text
+    var graphLabel = $(jqID).text().slice(6) + " " + program + " " + fy
+
+    //prevent exact duplicates
+    for (let i=0; i < metricChart.data.datasets.length; i++) {
+        if (graphLabel == metricChart.data.datasets[i].label) {
+            return
+        }
+    }
     
     const newDataset = {
         type: "bar",
-        label: $(jqID).text() + "",
+        label: graphLabel,
         backgroundColor: buildColorRGB(count) + ", 0.5)", 
         data: []};
         for (let i=1; i < 5; i++) {
@@ -235,8 +253,8 @@ function graphMetric(e) {
     const newGoalline = {
             type: "line",
             borderDash:[5,5],
-            //pointRadius: 0,
-            label: "Goal: " + $(jqID).text(),
+            pointRadius: 0,
+            label: "Goal: " + graphLabel,
             borderColor: buildColorRGB(count) +  ", " + " 0.75)",
             data: [],
     }
@@ -276,7 +294,7 @@ $(document).ready(function() {
     });
 
 
-    $('#averageSelect').select2({});
+    $('#programSelect').select2({});
 
     $('#fySelect').select2({});
 
