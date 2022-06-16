@@ -41,6 +41,7 @@
 }
 .box:hover {
     background: royalblue;
+    font-weight: 550;
 }
 
 .metriclabel {
@@ -109,6 +110,7 @@
 <h1>Learning Hub Dashboard Proof of Concept</h1>
 <p>No actual TNM data used</p>
 <p>Updated 06/16/22</p>
+<p>Click on a metric name to graph it or on a cell with data to view details</p>
 <h3>Dashboard</h3>
 <select class="selectorDrop" name="Program" id="programSelect">
     <option default value="crib">The Crib</option>
@@ -116,11 +118,11 @@
     <option value="pathways">Pathways</option>
 </select>
 <select class="selectorDrop" name="metric" id="metricSelect">
-    <option default value="Housing">Housing</option>
-    <option value="Housing">Health</option>
-    <option value="Housing">Employment and Education</option>
+    <option default value="housing">Housing</option>
+    <option value="permanent">Permanent Connection</option>
+    <option value="education">Employment and Education</option>
 </select>
-<select class="selectorDrop" name="metric" id="fySelect" style="width: 75px;">
+<select class="selectorDrop" name="year" id="fySelect" style="width: 75px;">
     <option default value="22">FY22</option>
     <option value="21">FY21</option>
     <option value="20">FY20</option>
@@ -219,6 +221,67 @@ function buildColorRGB(i) {
 };
 
 
+var metricAbbs = ["SAS", "CES", "ECO"]
+
+var metricTexts = {
+    housing:["Youth Attained Safe/Stable Housing", "Youth Completed/Updated CES Assessment", "Youth Completed Safety Plan"],
+    permanent:["Youth Feel Physically/Emotionally Safe", "Youth State Program Meets Needs", "Youth Participate in Optional Groups"],
+    education:["Youth Improved Education Status", "Youth Obtained Employment", "Youth Increased Income"]
+}
+
+function metricGen() { 
+
+    var metricType = $("#metricSelect").select2("data")[0].id
+
+    for (let i = 0; i < metricAbbs.length; i++) {
+        let txt = metricTexts[metricType][i]
+        $("#" + metricAbbs[i]).text(txt)
+
+        let newGoal = String(Math.floor(Math.random() * 8 + 1))
+        newGoal += String(Math.round(Math.random()) * 5) + "%" 
+        $("#" + metricAbbs[i] + "GOAL").text(newGoal)
+    }    
+
+    dataGen()
+}
+
+function dataGen() {
+    for (let i = 0; i < metricAbbs.length; i++) {
+        var currGoal = parseInt($("#" + metricAbbs[i] + "GOAL").text())
+        for (let j=1; j<5; j++) {
+            let value = currGoal - 20 + Math.floor(Math.random() * 40)
+            if (value > 100) {
+                value = 100
+            } 
+            if (value < 0) {
+                value = 0
+            }
+            value = String(value) + "%"
+            $("#" + metricAbbs[i] + "Q"  + String(j)).text(value)
+            let frac = String(value).slice(0,3) + "/100"
+            $("#" + metricAbbs[i] + "Q"  + String(j)).prop("title", frac)
+        }
+        
+        var ytd = 0
+        for (let k=1; k<5; k++) { 
+            ytd += parseFloat($("#" + metricAbbs[i] + "Q"  + String(k)).text())
+        }
+        ytd = String(Math.round(ytd / 4)) + "%"
+        $("#" + metricAbbs[i] + "YTD").text(ytd)
+
+        var ratio = parseFloat(ytd) / currGoal 
+        if (ratio >= 0.9) {
+            $("#" + metricAbbs[i] + "YTD").css("background-color", "lightgreen")
+        } else if (ratio >= 0.75) {
+            $("#" + metricAbbs[i] + "YTD").css("background-color", "khaki")
+        } else {
+            $("#" + metricAbbs[i] + "YTD").css("background-color", "lightcoral")
+        }
+
+    }
+
+}
+
 var count = 0
 
 function graphMetric(e) {
@@ -289,15 +352,14 @@ function showDetail(e) {
 
 $(document).ready(function() {
 
-    $('#metricSelect').select2({
-        maximumSelectionLength: 4
-    });
-
+    $('#metricSelect').select2({});
+    $('#metricSelect').on("select2:select",metricGen);
 
     $('#programSelect').select2({});
+    $('#programSelect').on("select2:select",dataGen);
 
     $('#fySelect').select2({});
-
+    $('#fySelect').on("select2:select",dataGen);
 
     $('.metric').click(graphMetric);
 
