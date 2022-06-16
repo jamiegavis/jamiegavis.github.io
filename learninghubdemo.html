@@ -9,6 +9,26 @@
       <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
 <style>
+.goalbox {
+    display: inline-block;
+    width: 50px;
+    height:25px;
+    padding: 5px;
+    border: 2px white;
+    background: cornflowerblue;
+    color: white;
+    text-align: center;
+} 
+.titlebox {
+    display: inline-block;
+    width: 50px;
+    height:25px;
+    padding: 5px;
+    border: 2px white;
+    background: cornflowerblue;
+    color: white;
+    text-align: center;
+} 
 .box {
     display: inline-block;
     width: 50px;
@@ -18,8 +38,23 @@
     background: cornflowerblue;
     color: white;
     text-align: center;
-    
 }
+.box:hover {
+    background: royalblue;
+}
+
+.metriclabel {
+    display: inline-block;
+    width: 300px;
+    height: 25px;
+    margin-left: 10px;
+    margin-top: 2px;
+    padding: 5px;
+    border: 2px white;
+    background: cornflowerblue;
+    color: white;
+}
+
 .metric {
     display: inline-block;
     width: 300px;
@@ -31,6 +66,11 @@
     background: cornflowerblue;
     color: white;
 }
+
+.metric:hover {
+    background: royalblue;
+}
+
 .boxSAS {
     display: inline-block;
     width: 50px;
@@ -80,19 +120,19 @@
     <option value="Housing">Health</option>
     <option value="Housing">Employment and Education</option>
 </select>
-<select class="selectorDrop" name="metric" id="fySelect">
+<select class="selectorDrop" name="metric" id="fySelect" style="width: 75px;">
     <option default value="FY22">FY22</option>
     <option value="FY21">FY21</option>
     <option value="FY20">FY20</option>
 </select>
 <div>
-    <div class="metric">Metric</div>
-    <div class="box" title="Q1 FY22">Q1</div>
-    <div class="box" title="Q2 FY22">Q2</div>
-    <div class="box" title="Q3 FY22">Q3</div>
-    <div class="box" title="Q4 FY22">Q4</div>
-    <div class="box" title="YTD">YTD</div>
-    <div class="box" title="Goal">Goal</div>
+    <div class="metriclabel">Metric</div>
+    <div class="titlebox" title="Q1 FY22">Q1</div>
+    <div class="titlebox" title="Q2 FY22">Q2</div>
+    <div class="titlebox" title="Q3 FY22">Q3</div>
+    <div class="titlebox" title="Q4 FY22">Q4</div>
+    <div class="titlebox" title="YTD">YTD</div>
+    <div class="titlebox" title="Goal">Goal</div>
 </div>
 <div>
     <div class="metric" id="SAS">Youth Attained Safe/Stable Housing</div>
@@ -101,26 +141,26 @@
     <div class="box" title="5/8" id="SASQ3">63%</div>
     <div class="box" title="8/9" id="SASQ4">89%</div> 
     <div class="boxSAS" title="32/41" id="SASYTD">78%</div> 
-    <div class="box" id="SASGOAL" title="YTD 98% of Goal">80%</div> 
+    <div class="goalbox" id="SASGOAL" title="YTD 98% of Goal">80%</div> 
 
 </div>
 <div>
-    <div class="metric" id="CES">Youth Completed CES Assessment</div>
+    <div class="metric" id="CES">Youth Completed/Updated CES Assessment</div>
     <div class="box" title="3/6" id="CESQ1">50%</div>
     <div class="box" title="4/7" id="CESQ2">57%</div>
     <div class="box" title="5/8" id="CESQ3">63%</div>
     <div class="box" title="4/8" id="CESQ4">50%</div> 
     <div class="boxCES" title="16/29" id="CESYTD">55%</div> 
-    <div class="box" id="CESGOAL" title="YTD 79% of Goal">70%</div> 
+    <div class="goalbox" id="CESGOAL" title="YTD 79% of Goal">70%</div> 
 </div>
 <div>
-    <div class="metric" id="ECO">Youth Added A Support to EcoMap</div>
+    <div class="metric" id="ECO">Youth Completed Safety Plan</div>
     <div class="box" title="1/6" id="ECOQ1">17%</div>
     <div class="box" title="4/15" id="ECOQ2">27%</div>
     <div class="box" title="1/8" id="ECOQ3">13%</div>
     <div class="box" title="3/9" id="ECOQ4">33%</div>  
     <div class="boxECO" title="9/38" id="ECOYTD">22%</div> 
-    <div class="box" id="ECOGOAL" title="YTD 87% of Goal">25%</div> 
+    <div class="goalbox" id="ECOGOAL" title="YTD 87% of Goal">25%</div> 
 </div>
 <h3>Graph  <button id="clearGraph">Reset</button></h3>
 <div class="container" style="position: relative; height:800px; width:500px">
@@ -134,7 +174,7 @@ const ctx = document.getElementById('metricChart').getContext('2d');
 const metricChart = new Chart(ctx, {
     data: {
         datasets: [],
-        labels: ["Q1 FY22","Q2 FY22", "Q3 FY22", "Q4 FY22"]
+        labels: ["Q1","Q2", "Q3", "Q4"]
     },
     options: {
         scales: {
@@ -180,7 +220,7 @@ function graphMetric(e) {
     
     const newDataset = {
         type: "bar",
-        label: $(jqID).text(),
+        label: $(jqID).text() + "",
         backgroundColor: buildColorRGB(count) + ", 0.5)", 
         data: []};
         for (let i=1; i < 5; i++) {
@@ -237,6 +277,9 @@ $(document).ready(function() {
 
 
     $('#averageSelect').select2({});
+
+    $('#fySelect').select2({});
+
 
     $('.metric').click(graphMetric);
 
